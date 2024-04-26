@@ -1,8 +1,11 @@
 from data.preprocessing import ParaDataset
 from model import FinetuneModel
 from transformers import Trainer, TrainingArguments
+import torch
 
-FTModel = FinetuneModel('cpu')
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
+FTModel = FinetuneModel(device)
 FTModel.build_model()
 dataset = ParaDataset(FTModel.tokenizer, setting='train')
 print(dataset.max_len)

@@ -1,3 +1,6 @@
 transformers
-indicnlp
+indic-nlp-library
 sentencepiece
+accelerate
+torch
+datasets

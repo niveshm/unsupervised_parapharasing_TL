@@ -3,11 +3,12 @@ from torch.utils.data import Dataset
 from indicnlp.tokenize import indic_tokenize
 import random
 from tqdm import tqdm
+
 # from ..model import FinetuneModel
 
 
 class ParaDataset(Dataset):
-    def __init__(self, tokenizer, max_len=1024, remove_percent=0.1, setting='train'):
+    def __init__(self, tokenizer, max_len=1024, remove_percent=0.1, setting='train', device='cpu', keep_in_memory=False):
         # self.data = data
         self.max_len = max_len
         self.setting = setting
@@ -16,6 +17,8 @@ class ParaDataset(Dataset):
         self.tokenizer = tokenizer
         self.remove_percent = remove_percent
         self.data, self.targets = self.preprocess(inputs, 'input')
+        self.device = device
+        self.keep_in_memory = keep_in_memory
 
         del inputs
         del targets
@@ -41,6 +44,8 @@ class ParaDataset(Dataset):
 
         if type == 'input':
             print("Processing data")
+            ## multi thread this
+
             inputs = [indic_tokenize.trivial_tokenize(item) for item in data]
             inputs = [random.sample(item, int((1 - self.remove_percent) * len(item))) for item in inputs]
             for item in inputs:
@@ -117,26 +122,29 @@ class ParaDataset(Dataset):
     
     def __getitem__(self, idx):
         sample = {}
-        sample['input_ids'] = self.data['input_ids'][idx]
-        sample['attention_mask'] = self.data['attention_mask'][idx]
-        sample['labels'] = self.targets['input_ids'][idx]
+        # self.data['input_ids']
+        sample['input_ids'] = self.data['input_ids'][idx].to(self.device)
+        sample['attention_mask'] = self.data['attention_mask'][idx].to(self.device)
+        sample['labels'] = self.targets['input_ids'][idx].to(self.device)
+        # sample.to(self.device)
+
         return sample
     
     def load_dataset(self):
         res = []
         targets = []
         if self.setting == 'train':
-            dataset = load_dataset("ai4bharat/IndicParaphrase", 'hi', keep_in_memory=True)['train']
+            dataset = load_dataset("ai4bharat/IndicParaphrase", 'hi', keep_in_memory=self.keep_in_memory)['train']
             for item in dataset:
                 res.append(item['input'])
                 # targets.append(item['target'])
         elif self.setting == 'valid':
-            dataset = load_dataset("ai4bharat/IndicParaphrase", 'hi', keep_in_memory=True)['validation']
+            dataset = load_dataset("ai4bharat/IndicParaphrase", 'hi', keep_in_memory=self.keep_in_memory)['validation']
             for item in dataset:
                 res.append(item['input'])
                 targets.append(item['target'])
         elif self.setting == 'test':
-            dataset = load_dataset("ai4bharat/IndicParaphrase", 'hi', keep_in_memory=True)['test']
+            dataset = load_dataset("ai4bharat/IndicParaphrase", 'hi', keep_in_memory=self.keep_in_memory)['test']
             for item in dataset:
                 res.append(item['input'])
                 targets.append(item['target'])
