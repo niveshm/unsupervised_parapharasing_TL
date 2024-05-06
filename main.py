@@ -1,12 +1,14 @@
 from data.preprocessing import ParaDataset, get_dataloader
 from model import FinetuneModel
-from transformers import Trainer, TrainingArguments, AdamW, get_linear_schedule_with_warmup
+from transformers import Trainer, TrainingArguments, get_linear_schedule_with_warmup
 import torch
 from torch import nn
+from torch.optim import AdamW
 from tqdm import tqdm
 import numpy as np
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
+print(device)
 
 FTModel = FinetuneModel(device)
 FTModel.build_model()
@@ -17,7 +19,7 @@ train_dataloader = get_dataloader(dataset, batch_size=32, collate_fn=dataset.col
 
 val_dataset = ParaDataset(FTModel.tokenizer, setting='valid')
 
-val_dataloader = get_dataloader(val_dataset, batch_size=32, collate_fn=val_dataset.collate_fn)
+val_dataloader = get_dataloader(val_dataset, batch_size=32, shuffle=True, collate_fn=val_dataset.collate_fn)
 print(len(val_dataset))
 
 
