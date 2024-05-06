@@ -4,3 +4,5 @@ sentencepiece
 accelerate
 torch
 datasets
+bitsandbytes
+peft
