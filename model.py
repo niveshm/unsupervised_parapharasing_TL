@@ -1,5 +1,5 @@
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
-from peft import LoraConfig, TaskType, get_peft_model
+
 
 # def pre_data(sentence):
 special_chars = {'bos_token': '<s>', 'eos_token': '</s>', 'unk_token': '<unk>', 'sep_token': '[SEP]', 'pad_token': '<pad>', 'cls_token': '[CLS]', 'mask_token': '[MASK]'}
@@ -12,14 +12,8 @@ class FinetuneModel:
         self.model_name = "rahular/varta-t5"
     
     def build_model(self):
-        peft_config = LoraConfig(
-            task_type=TaskType.SEQ_2_SEQ_LM, inference_mode=False, r=8, lora_alpha=32, lora_dropout=0.1
-        )
-
-        model = AutoModelForSeq2SeqLM.from_pretrained(self.model_name)
-        self.model = get_peft_model(model, peft_config)
+        self.model = AutoModelForSeq2SeqLM.from_pretrained(self.model_name)
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
-
 
         if self.special_chars:
             self.tokenizer.add_special_tokens(special_chars)
