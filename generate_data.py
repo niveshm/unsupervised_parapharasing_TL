@@ -3,6 +3,7 @@ import numpy as np
 import torch
 from tqdm import tqdm
 import pandas as pd
+import datetime
 
 from data.preprocessing import ParaDataset
 from model import FinetuneModel
@@ -143,8 +144,12 @@ try:
 except KeyboardInterrupt:
     print("Keyboard Interrupt")
     print("Saving Data")
+    if len(data) > len(result):
+        # print("Data and Result length not same")
+        data.pop()
     df = pd.DataFrame({'data': data, 'result': result})
-    df.to_csv('data.csv', index=False)
+    timestamp = datetime.datetime.now()
+    df.to_csv(f'data_keyint_{timestamp}.csv', index=False)
     print("Data Saved")
     exit()
 
@@ -153,8 +158,9 @@ except KeyboardInterrupt:
 
 
 ## save data and result to csv
+timestamp = datetime.datetime.now()
 df = pd.DataFrame({'data': data, 'result': result})
-df.to_csv('data.csv', index=False)
+df.to_csv(f'data_{timestamp}.csv', index=False)
 
 print("Done")
 
