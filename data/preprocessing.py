@@ -8,16 +8,20 @@ from tqdm import tqdm
 
 
 class ParaDataset(Dataset):
-    def __init__(self, tokenizer, remove_percent=0.1, setting='train', keep_in_memory=True):
+    def __init__(self, tokenizer, remove_percent=0.1, setting='train', keep_in_memory=True, only_str=False):
         # self.data = data
         self.setting = setting
         self.keep_in_memory = keep_in_memory
         self.tokenizer = tokenizer
         self.remove_percent = remove_percent
+        self.only_str = only_str
 
         self.data = self.load_dataset()
-        self.data = self.data[:100000]
+        self.data = self.data[:50000]
+
         print(len(self.data))
+        if only_str:
+            return
 
         self.data = self.preprocess()
 
@@ -59,9 +63,13 @@ class ParaDataset(Dataset):
 
     
     def __len__(self):
+        if self.only_str:
+            return len(self.data)
         return len(self.data['input_ids'])
     
     def __getitem__(self, idx):
+        if self.only_str:
+            return self.data[idx]
 
         input_ids = self.data['input_ids'][idx]
         attention_mask = self.data['attention_mask'][idx]

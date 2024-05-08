@@ -15,11 +15,11 @@ FTModel.build_model()
 dataset = ParaDataset(FTModel.tokenizer, setting='train')
 print(len(dataset))
 print(dataset[0])
-train_dataloader = get_dataloader(dataset, batch_size=32, collate_fn=dataset.collate_fn)
+train_dataloader = get_dataloader(dataset, batch_size=8, collate_fn=dataset.collate_fn)
 
 val_dataset = ParaDataset(FTModel.tokenizer, setting='valid')
 
-val_dataloader = get_dataloader(val_dataset, batch_size=32, shuffle=True, collate_fn=val_dataset.collate_fn)
+val_dataloader = get_dataloader(val_dataset, batch_size=8, shuffle=True, collate_fn=val_dataset.collate_fn)
 print(len(val_dataset))
 
 
@@ -47,6 +47,7 @@ def train_model(model, epochs=10, lr=1e-4):
                 print(f"Epoch: {epoch}, Step: {i}, Loss: {output.loss.item()}")
             
         print("Train Loss: ", train_loss / len(train_dataloader))
+        torch.save(model.state_dict(), f'./model_{epoch}.pt')
         
         print("Validation")
         model.eval()
@@ -55,7 +56,6 @@ def train_model(model, epochs=10, lr=1e-4):
             for i, (input_ids, attention_mask, labels) in tqdm(enumerate(val_dataloader)):
                 input_ids, attention_mask, labels = input_ids.to(device), attention_mask.to(device), labels.to(device)
                 output = model(input_ids, attention_mask=attention_mask, labels=labels)
-                output.loss.backward()
                 val_loss += output.loss.item()
                 if i % 10 == 0:
                     print(f"Epoch: {epoch}, Step: {i}, Val Loss: {output.loss.item()}")
