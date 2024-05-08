@@ -1,0 +1,7 @@
+transformers
+indic-nlp-library
+sentencepiece
+accelerate
+torch
+datasets
+rouge

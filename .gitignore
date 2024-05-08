@@ -1,0 +1,5 @@
+__pycache__/
+wandb/
+ouput/
+model_0.pt
+ada
