@@ -4,3 +4,4 @@ sentencepiece
 accelerate
 torch
 datasets
+rouge
