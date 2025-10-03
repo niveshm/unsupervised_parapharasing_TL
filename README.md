@@ -1,5 +1,5 @@
 ## Unsupervised Paraphrasing using Transfer Learning
-This is an implementation of transfer learning approach based unsupervised parapharsing which uses T5 transformer based architecture.
+This is an implementation of a transfer learning approach based on unsupervised paraphrasing for Indic languages, which uses a T5 transformer-based architecture.
 
 ### Usage
 - `model.py` has pretrained model and tokenizer related code.
